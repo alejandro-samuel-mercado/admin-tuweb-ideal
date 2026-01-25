@@ -1,0 +1,62 @@
+<div class="p-6">
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold font-display text-gradient mb-2">Dashboard</h1>
+    <p class="text-text-secondary">Overview of your platform's performance</p>
+  </div>
+
+  <div *ngIf="loading" class="flex justify-center py-12">
+    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+  </div>
+
+  <div *ngIf="stats" class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <!-- Total Users -->
+    <div class="glass-panel rounded-2xl p-6 shadow-lg shadow-black/5 hover:translate-y-[-2px] transition-transform duration-300">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-text-muted text-sm font-medium uppercase tracking-wider">Total Users</h3>
+        <div class="p-2 bg-blue-500/10 rounded-lg text-blue-500">
+          <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+          </svg>
+        </div>
+      </div>
+      <p class="text-3xl font-bold text-text-primary font-display">{{ stats.totalUsers }}</p>
+    </div>
+
+    <!-- Total Orders -->
+    <div class="glass-panel rounded-2xl p-6 shadow-lg shadow-black/5 hover:translate-y-[-2px] transition-transform duration-300">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-text-muted text-sm font-medium uppercase tracking-wider">Total Orders</h3>
+        <div class="p-2 bg-primary/10 rounded-lg text-primary">
+          <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+          </svg>
+        </div>
+      </div>
+      <p class="text-3xl font-bold text-text-primary font-display">{{ stats.totalOrders }}</p>
+    </div>
+
+    <!-- Pending Orders -->
+    <div class="glass-panel rounded-2xl p-6 shadow-lg shadow-black/5 hover:translate-y-[-2px] transition-transform duration-300">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-text-muted text-sm font-medium uppercase tracking-wider">Pending</h3>
+        <div class="p-2 bg-warning/10 rounded-lg text-warning">
+          <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+      </div>
+      <p class="text-3xl font-bold text-text-primary font-display">{{ stats.pendingOrders }}</p>
+    </div>
+  </div>
+
+  <!-- Orders by Status Chart -->
+  <div *ngIf="stats" class="glass-panel rounded-2xl p-6 shadow-lg shadow-black/5">
+    <h2 class="text-xl font-bold text-text-primary font-display mb-6">Order Status</h2>
+    <div class="space-y-4">
+      <div *ngFor="let status of stats.ordersByStatus" class="flex items-center justify-between p-4 bg-surface-highlight rounded-xl border border-border/50">
+        <span class="font-medium text-text-secondary">{{ status.status }}</span>
+        <span class="px-3 py-1 bg-surface rounded-full shadow-sm text-sm font-bold text-primary border border-border">{{ status._count.status }}</span>
+      </div>
+    </div>
+  </div>
+</div>
