@@ -777,26 +777,22 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
     this.selectedImage = null;
     this.imagePreview = null;
   }
-
-  sendMessage(event: Event) {
+sendMessage(event: Event) {
   event.preventDefault();
 
   if (!this.newMessage.trim() && !this.selectedImage) return;
 
-  this.adminService.sendMessage(
-    this.order.id,
-    this.newMessage,
-    this.selectedImage ?? undefined
-  ).subscribe({
-    next: () => {
-      this.newMessage = '';
-      this.selectedImage = null;
-      this.loadOrder(this.order.id);
-    },
-    error: (err) => {
-      console.error(err);
-    }
-  });
+  this.adminService
+    .sendMessage(this.order.id, this.newMessage, this.selectedImage || undefined)
+    .subscribe({
+      next: () => {
+        this.newMessage = '';
+        this.removeSelectedImage();
+        this.loadOrder(this.order.id);
+      },
+      error: (err) => console.error(err),
+    });
 }
+
 }
 
