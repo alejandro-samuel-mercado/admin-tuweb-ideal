@@ -115,7 +115,7 @@ export class AdminService {
   }
 
   sendMessage(orderId: number, content: string, imageUrl?: string): Observable<any> {
-    return this.http.post(`${this.contentUrl}/orders/${orderId}/messages`, { content, imageUrl }, {
+    return this.http.post(`${this.apiUrl}/orders/${orderId}/messages`, { content, imageUrl }, {
       withCredentials: true,
     });
   }
@@ -123,6 +123,6 @@ export class AdminService {
   uploadOrderImage(orderId: number, file: File): Observable<any> {
       const formData = new FormData();
       formData.append('image', file);
-      return this.http.post(`${this.contentUrl}/orders/${orderId}/upload-image`, formData, { withCredentials: true });
+      return this.http.post(`${this.apiUrl}/orders/${orderId}/upload-image`, formData, { withCredentials: true });
   }
 }
