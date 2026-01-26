@@ -434,6 +434,17 @@ import { AdminService } from '../../services/admin';
               </div>
             </div>
 
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-bold text-text-secondary mb-1.5">Project Link (URL)</label>
+                <input [(ngModel)]="projectForm.url" type="url" class="w-full px-4 py-2.5 bg-surface-highlight/50 border border-border rounded-xl focus:ring-2 focus:ring-secondary/20 focus:border-secondary transition-all outline-none text-text-primary" placeholder="https://..." />
+              </div>
+               <div>
+                <label class="block text-sm font-bold text-text-secondary mb-1.5">Client</label>
+                <input [(ngModel)]="projectForm.client" type="text" class="w-full px-4 py-2.5 bg-surface-highlight/50 border border-border rounded-xl focus:ring-2 focus:ring-secondary/20 focus:border-secondary transition-all outline-none text-text-primary" />
+              </div>
+            </div>
+
              <div>
               <label class="block text-sm font-bold text-text-secondary mb-1.5">Short Description</label>
               <textarea *ngIf="activeLang === 'es'" [(ngModel)]="projectForm.description" rows="2" class="w-full px-4 py-2.5 bg-surface-highlight/50 border border-border rounded-xl focus:ring-2 focus:ring-secondary/20 focus:border-secondary transition-all outline-none text-text-primary"></textarea>
