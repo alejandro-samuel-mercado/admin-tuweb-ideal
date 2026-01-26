@@ -113,26 +113,24 @@ export class AdminService {
   deleteExampleProject(id: number): Observable<any> {
     return this.http.delete(`${this.contentUrl}/example-projects/${id}`, { withCredentials: true });
   }
-
- sendMessage(orderId: number, content: string, imageUrl?: string) {
-  return this.http.post(
-    `${environment.apiUrl}/orders/${orderId}/messages`,
-    { content, imageUrl },
-    { withCredentials: true }
-  );
-}
-  usendMessage(orderId: number, content: string, image?: File) {
+sendMessage(
+  orderId: number,
+  content: string,
+  image?: File
+) {
   const formData = new FormData();
-  formData.append('content', content);
+
+  if (content?.trim()) {
+    formData.append('content', content);
+  }
 
   if (image) {
     formData.append('image', image);
   }
 
   return this.http.post(
-    `${environment.apiUrl}/orders/${orderId}/messages`,
-    formData,
-    { withCredentials: true }
+    `${this.apiUrl}/content/orders/${orderId}/messages`,
+    formData
   );
 }
 

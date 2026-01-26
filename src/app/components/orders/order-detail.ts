@@ -779,29 +779,24 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
   }
 
   sendMessage(event: Event) {
-    event.preventDefault();
-    if (!this.newMessage.trim() && !this.selectedImage) return;
+  event.preventDefault();
 
-    if (this.selectedImage) {
-      this.adminService
-        .uploadOrderImage(this.order.id, this.selectedImage)
-        .subscribe((res: any) => {
-          this.sendTextMessage(res.imageUrl);
-          this.removeSelectedImage();
-        });
-    } else {
-      this.sendTextMessage();
+  if (!this.newMessage.trim() && !this.selectedImage) return;
+
+  this.adminService.sendMessage(
+    this.order.id,
+    this.newMessage,
+    this.selectedImage ?? undefined
+  ).subscribe({
+    next: () => {
+      this.newMessage = '';
+      this.selectedImage = null;
+      this.loadOrder(this.order.id);
+    },
+    error: (err) => {
+      console.error(err);
     }
-  }
-
-  private sendTextMessage(imageUrl?: string) {
-    const content = this.newMessage; 
-    
-    this.adminService
-      .sendMessage(this.order.id, content, imageUrl)
-      .subscribe(() => {
-        this.newMessage = '';
-        this.loadOrder(this.order.id);
-      });
-  }
+  });
 }
+}
+
