@@ -708,7 +708,7 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
       this.loadOrder(params['id']);
     });
     this.pollingInterval = setInterval(() => {
-      if (this.order) {
+      if (this.order && this.order.id) {
         this.loadOrder(this.order.id, false);
       }
     }, 5000);
