@@ -344,11 +344,11 @@ import { AdminService } from '../../services/admin';
                 <div
                   class="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white text-xl font-bold shadow-lg shadow-primary/20"
                 >
-                  {{ order.user.name.charAt(0) }}
+                  {{ order.user?.name?.charAt(0) || '?' }}
                 </div>
                 <div>
-                  <p class="text-lg font-bold text-text-primary">{{ order.user.name }}</p>
-                  <p class="text-sm text-text-secondary">{{ order.user.email }}</p>
+                  <p class="text-lg font-bold text-text-primary">{{ order.user?.name || 'Unknown User' }}</p>
+                  <p class="text-sm text-text-secondary">{{ order.user?.email || 'No email' }}</p>
                 </div>
               </div>
             </div>
@@ -538,10 +538,10 @@ import { AdminService } from '../../services/admin';
             <div
               class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center font-bold"
             >
-              {{ order.user.name.charAt(0) }}
+              {{ order.user?.name?.charAt(0) || '?' }}
             </div>
             <div>
-              <h3 class="font-bold">Chat with {{ order.user.name }}</h3>
+              <h3 class="font-bold">Chat with {{ order.user?.name || 'User' }}</h3>
               <p class="text-xs opacity-75">Online now</p>
             </div>
           </div>
