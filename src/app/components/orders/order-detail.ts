@@ -3,6 +3,8 @@ import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/co
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { AdminService } from '../../services/admin';
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 @Component({
   selector: 'app-order-detail',
@@ -705,7 +707,7 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.route.params.subscribe((params) => {
-      this.loadOrder(params['id']);
+      this.loadOrder(params['orderId']);
     });
     this.pollingInterval = setInterval(() => {
       if (this.order && this.order.id) {
