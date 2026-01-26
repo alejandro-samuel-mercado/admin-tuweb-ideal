@@ -114,12 +114,13 @@ export class AdminService {
     return this.http.delete(`${this.contentUrl}/example-projects/${id}`, { withCredentials: true });
   }
 
-  sendMessage(orderId: number, content: string, imageUrl?: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/orders/${orderId}/messages`, { content, imageUrl }, {
-      withCredentials: true,
-    });
-  }
-
+ sendMessage(orderId: number, content: string, imageUrl?: string) {
+  return this.http.post(
+    `${environment.apiUrl}/orders/${orderId}/messages`,
+    { content, imageUrl },
+    { withCredentials: true }
+  );
+}
   uploadOrderImage(orderId: number, file: File): Observable<any> {
       const formData = new FormData();
       formData.append('image', file);
