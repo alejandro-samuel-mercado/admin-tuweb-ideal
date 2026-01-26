@@ -729,21 +729,18 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
     }
   }
 
-  loadOrder(id: string, showLoading = true) {
-    if (!id || id === 'undefined' || id === 'null') {
-       console.error('Invalid Order ID:', id);
-       return;
-    }
-    this.adminService.getOrder(id).subscribe((order: any) => {
-      this.order = order;
-      if (order.deliveryDate) {
-        this.deliveryDate = new Date(order.deliveryDate).toISOString().split('T')[0];
-      }
-      if (showLoading || this.shouldAutoScroll) {
-        setTimeout(() => this.scrollToBottom(), 100);
-      }
-    });
-  }
+ loadOrder(id: string, showLoader = true) {
+ 
+  this.adminService.getOrder(id).subscribe({
+    next: (res: any) => {
+      this.order = res.order; 
+    },
+    error: (err) => {
+      console.error(err);
+    },
+  });
+}
+
 
   getApiUrl(path: string): string {
     if (!path) return '';
