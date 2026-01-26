@@ -706,14 +706,21 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.route.params.subscribe((params) => {
-      this.loadOrder(params['orderId']);
-    });
-    this.pollingInterval = setInterval(() => {
-      if (this.order && this.order.id) {
-        this.loadOrder(this.order.id, false);
-      }
-    }, 5000);
+    this.route.paramMap.subscribe((params) => {
+    const id = params.get('id');
+
+    if (!id) {
+      return; 
+    }
+
+    this.loadOrder(id);
+  });
+
+  this.pollingInterval = setInterval(() => {
+    if (this.order?.id) {
+      this.loadOrder(this.order.id, false);
+    }
+  }, 5000);
   }
 
   ngOnDestroy() {
