@@ -124,6 +124,6 @@ export class AdminService {
   uploadOrderImage(orderId: number, file: File): Observable<any> {
       const formData = new FormData();
       formData.append('image', file);
-      return this.http.post(`${this.apiUrl}/orders/${orderId}/upload-image`, formData, { withCredentials: true });
+      return this.http.post(`${environment.apiUrl}/orders/${orderId}/upload-image`, formData, { withCredentials: true });
   }
 }
