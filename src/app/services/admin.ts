@@ -121,9 +121,19 @@ export class AdminService {
     { withCredentials: true }
   );
 }
-  uploadOrderImage(orderId: number, file: File): Observable<any> {
-      const formData = new FormData();
-      formData.append('image', file);
-      return this.http.post(`${environment.apiUrl}/orders/${orderId}/upload-image`, formData, { withCredentials: true });
+  usendMessage(orderId: number, content: string, image?: File) {
+  const formData = new FormData();
+  formData.append('content', content);
+
+  if (image) {
+    formData.append('image', image);
   }
+
+  return this.http.post(
+    `${environment.apiUrl}/orders/${orderId}/messages`,
+    formData,
+    { withCredentials: true }
+  );
+}
+
 }
