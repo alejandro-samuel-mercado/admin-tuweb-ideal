@@ -130,7 +130,7 @@ sendMessage(
 
   return this.http.post(
     `${this.apiUrl}/content/orders/${orderId}/messages`,
-    formData
+    formData,    { withCredentials: true }
   );
 }
 
