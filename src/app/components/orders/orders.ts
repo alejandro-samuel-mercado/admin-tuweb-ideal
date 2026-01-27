@@ -43,14 +43,14 @@ import { AdminService } from '../../services/admin';
             <input
               type="date"
               [(ngModel)]="dateFilter"
-              (ngModelChange)="loadOrders()"
+              (ngModelChange)="applyFilters()"
               class="outline-none text-sm bg-transparent text-text-primary border-none focus:ring-0 p-0"
             />
           </div>
 
           <select
             [(ngModel)]="statusFilter"
-            (ngModelChange)="loadOrders()"
+            (ngModelChange)="applyFilters()"
             class="px-4 py-2 bg-surface border border-border rounded-xl text-sm text-text-primary focus:ring-2 focus:ring-primary/20 focus:border-primary shadow-sm outline-none"
           >
             <option value="">All Statuses</option>
@@ -175,7 +175,7 @@ import { AdminService } from '../../services/admin';
 })
 export class OrdersComponent implements OnInit {
   orders: any[] = [];
-  loading = true;
+  allOrders: any[] = [];
   statusFilter = '';
   dateFilter = '';
   userIdFilter: string | null = null;
@@ -192,16 +192,33 @@ export class OrdersComponent implements OnInit {
   loadOrders() {
     this.loading = true;
     const filters: any = {};
-    if (this.statusFilter) filters.status = this.statusFilter;
-    if (this.dateFilter) filters.createdAt = this.dateFilter;
     if (this.userIdFilter) filters.userId = this.userIdFilter;
 
     this.adminService.getOrders(filters).subscribe({
       next: (res) => {
-        this.orders = res.orders;
+        this.allOrders = res.orders;
+        this.applyFilters();
         this.loading = false;
       },
       error: () => (this.loading = false),
+    });
+  }
+
+  applyFilters() {
+    this.orders = this.allOrders.filter(order => {
+      let matchesStatus = true;
+      let matchesDate = true;
+
+      if (this.statusFilter) {
+        matchesStatus = order.status === this.statusFilter;
+      }
+
+      if (this.dateFilter) {
+        const orderDate = new Date(order.createdAt).toISOString().split('T')[0];
+        matchesDate = orderDate === this.dateFilter;
+      }
+
+      return matchesStatus && matchesDate;
     });
   }
 
@@ -209,7 +226,7 @@ export class OrdersComponent implements OnInit {
     this.statusFilter = '';
     this.dateFilter = '';
     this.userIdFilter = null;
-    this.loadOrders();
+    this.loadOrders(); 
   }
 
   updateStatus(id: number, status: string) {
