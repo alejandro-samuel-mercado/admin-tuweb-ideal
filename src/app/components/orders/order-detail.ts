@@ -220,29 +220,34 @@ export const revalidate = 0;
               </button>
             </div>
             
-            <div class="p-8">
+            <div class="p-4 md:p-8">
               <div class="relative">
                 <!-- Vertical Line -->
-                <div class="absolute left-8 top-0 bottom-0 w-0.5 bg-border/50"></div>
+                <div class="absolute left-8 top-0 bottom-0 w-0.5 bg-border/50 hidden md:block"></div>
+                <!-- Show line on mobile but maybe center it differently? Or hide? Let's keep it but adjust if needed.
+                     Actually, indicator is w-16, centered at 32px. left-8 is 32px. It aligns.
+                -->
+                 <div class="absolute left-6 top-0 bottom-0 w-0.5 bg-border/50 md:hidden"></div> 
+                 <!-- Mobile line at left-6 (24px) for w-12 (48px) indicator centered? -->
 
                 <div class="space-y-8 relative">
-                  <div *ngFor="let step of order.timeline?.steps; let i = index" class="flex gap-6 group">
+                  <div *ngFor="let step of order.timeline?.steps; let i = index" class="flex gap-4 md:gap-6 group">
                    
                     <!-- Step Indicator -->
-                    <div class="relative z-10 w-16 flex flex-col items-center">
+                    <div class="relative z-10 w-12 md:w-16 flex flex-col items-center shrink-0">
                        <button
                          (click)="toggleStepStatus(i)"
-                         class="w-12 h-12 rounded-xl flex items-center justify-center shadow-sm transition-all border-2"
+                         class="w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center shadow-sm transition-all border-2 text-sm md:text-lg"
                          [ngClass]="{
                            'bg-success border-success text-white': step.status === 'completed',
                            'bg-surface border-primary text-primary': step.status === 'current',
                            'bg-surface-highlight border-border text-text-muted': step.status === 'pending'
                          }"
                        >
-                          <svg *ngIf="step.status === 'completed'" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <svg *ngIf="step.status === 'completed'" class="w-5 h-5 md:w-6 md:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
                           </svg>
-                          <span *ngIf="step.status !== 'completed'" class="font-bold text-lg">{{ i + 1 }}</span>
+                          <span *ngIf="step.status !== 'completed'" class="font-bold">{{ i + 1 }}</span>
                        </button>
                     </div>
 
@@ -252,14 +257,14 @@ export const revalidate = 0;
                         <div class="flex flex-col md:flex-row gap-4 mb-3">
                           <input
                             [(ngModel)]="step.title"
-                            class="flex-1 bg-transparent border-none p-0 font-bold text-text-primary focus:ring-0 text-lg placeholder:text-text-muted"
+                            class="flex-1 bg-transparent border-none p-0 font-bold text-text-primary focus:ring-0 text-lg placeholder:text-text-muted w-full"
                             placeholder="Step name"
                           />
                         
                         </div>
 
                         <!-- Step Actions -->
-                        <div class="flex gap-2">
+                        <div class="flex gap-2 flex-wrap">
                             <button 
                                 (click)="setStepStatus(i, 'pending')"
                                 class="px-3 py-1 rounded-lg text-xs font-bold transition-colors border"
@@ -435,7 +440,7 @@ export const revalidate = 0;
       <!-- Floating Chat Window -->
       <div
         *ngIf="isChatOpen"
-        class="fixed bottom-28 right-8 w-[400px] h-[550px] glass-panel bg-surface rounded-3xl shadow-2xl border border-border flex flex-col overflow-hidden z-50 animate-in slide-in-from-bottom-4 duration-300"
+        class="fixed inset-x-4 bottom-28 md:inset-auto md:right-8 md:w-[400px] h-[550px] glass-panel bg-surface rounded-3xl shadow-2xl border border-border flex flex-col overflow-hidden z-50 animate-in slide-in-from-bottom-4 duration-300 max-h-[70vh] md:max-h-none"
       >
         <div class="p-5 bg-gradient-to-r from-primary to-secondary text-primary-foreground">
           <div class="flex items-center gap-3">
