@@ -176,6 +176,7 @@ import { AdminService } from '../../services/admin';
 export class OrdersComponent implements OnInit {
   orders: any[] = [];
   allOrders: any[] = [];
+  loading = true;
   statusFilter = '';
   dateFilter = '';
   userIdFilter: string | null = null;
