@@ -43,14 +43,14 @@ import { AdminService } from '../../services/admin';
             <input
               type="date"
               [(ngModel)]="dateFilter"
-              (change)="loadOrders()"
+              (ngModelChange)="loadOrders()"
               class="outline-none text-sm bg-transparent text-text-primary border-none focus:ring-0 p-0"
             />
           </div>
 
           <select
             [(ngModel)]="statusFilter"
-            (change)="loadOrders()"
+            (ngModelChange)="loadOrders()"
             class="px-4 py-2 bg-surface border border-border rounded-xl text-sm text-text-primary focus:ring-2 focus:ring-primary/20 focus:border-primary shadow-sm outline-none"
           >
             <option value="">All Statuses</option>
@@ -193,7 +193,7 @@ export class OrdersComponent implements OnInit {
     this.loading = true;
     const filters: any = {};
     if (this.statusFilter) filters.status = this.statusFilter;
-    if (this.dateFilter) filters.date = this.dateFilter;
+    if (this.dateFilter) filters.createdAt = this.dateFilter;
     if (this.userIdFilter) filters.userId = this.userIdFilter;
 
     this.adminService.getOrders(filters).subscribe({
