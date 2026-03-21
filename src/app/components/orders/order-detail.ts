@@ -3,7 +3,10 @@ import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/co
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { AdminService } from '../../services/admin';
+import { environment } from '../../../environments/environment';
+
 export const dynamic = 'force-dynamic';
+
 export const revalidate = 0;
 
 @Component({
@@ -306,11 +309,122 @@ export const revalidate = 0;
                 Save Changes
               </button>
              </div>
+            <!-- Publish to Portfolio Card -->
+            <div *ngIf="order.status === 'FINISHED'" class="glass-panel rounded-2xl overflow-hidden shadow-xl border border-success/30 animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <div class="p-6 border-b border-success/20 bg-success/5 flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                  <div class="p-2 bg-success/10 rounded-lg text-success">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                  </div>
+                  <h2 class="text-lg font-black text-text-primary tracking-tight uppercase">Publish to Showcase</h2>
+                </div>
+                <span class="px-3 py-1 bg-success/10 text-success text-[10px] font-black rounded-full border border-success/20 tracking-widest uppercase">Action Required</span>
+              </div>
+              <div class="p-8 space-y-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div class="space-y-2">
+                    <label class="text-[10px] font-black text-text-muted uppercase tracking-[0.2em]">Project Title</label>
+                    <input [(ngModel)]="portfolioForm.title" class="w-full px-5 py-3 bg-surface-highlight/50 border border-border rounded-xl focus:ring-4 focus:ring-success/10 focus:border-success transition-all outline-none text-text-primary font-bold" />
+                  </div>
+                  <div class="space-y-2">
+                    <label class="text-[10px] font-black text-text-muted uppercase tracking-[0.2em]">Category</label>
+                    <input [(ngModel)]="portfolioForm.category" class="w-full px-5 py-3 bg-surface-highlight/50 border border-border rounded-xl focus:ring-4 focus:ring-success/10 focus:border-success transition-all outline-none text-text-primary font-bold" placeholder="e.g. E-Commerce, Corporate..." />
+                  </div>
+                </div>
+
+                <div class="space-y-2">
+                  <label class="text-[10px] font-black text-text-muted uppercase tracking-[0.2em]">Showcase Description</label>
+                  <textarea [(ngModel)]="portfolioForm.description" rows="4" class="w-full px-5 py-3 bg-surface-highlight/50 border border-border rounded-xl focus:ring-4 focus:ring-success/10 transition-all outline-none text-text-primary text-sm leading-relaxed" placeholder="Write a compelling description for the gallery..."></textarea>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div class="space-y-2">
+                    <label class="text-[10px] font-black text-text-muted uppercase tracking-[0.2em]">Main Image URL</label>
+                    <input [(ngModel)]="portfolioForm.imageUrl" class="w-full px-5 py-3 bg-surface-highlight/50 border border-border rounded-xl outline-none text-text-primary text-sm" placeholder="https://..." />
+                  </div>
+                   <div class="space-y-2">
+                    <label class="text-[10px] font-black text-text-muted uppercase tracking-[0.2em]">Live Website URL</label>
+                    <input [(ngModel)]="portfolioForm.url" class="w-full px-5 py-3 bg-surface-highlight/50 border border-border rounded-xl outline-none text-text-primary text-sm" placeholder="https://..." />
+                  </div>
+                </div>
+
+                <div class="p-6 bg-surface-highlight/20 rounded-2xl border border-dashed border-border text-center">
+                  <button (click)="publishProject()" [disabled]="!portfolioForm.title || !portfolioForm.description" class="px-8 py-4 bg-success text-white rounded-2xl font-black uppercase tracking-[0.2em] text-xs hover:bg-success/90 transition-all shadow-xl shadow-success/20 disabled:opacity-50">
+                    Create Portal Entry & Feature Project
+                  </button>
+                  <p class="text-[10px] text-text-muted mt-4 uppercase font-bold tracking-widest">This will add the project to the public gallery section</p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
+
         <!-- Right Column: Client & Status -->
         <div class="space-y-8">
+          <!-- Status Actions Card -->
+          <div class="glass-panel rounded-2xl overflow-hidden border border-border bg-surface shadow-lg">
+            <div class="p-6 border-b border-border bg-surface-highlight/30">
+              <h3 class="text-xs font-black text-text-muted uppercase tracking-[0.2em]">Management Actions</h3>
+            </div>
+            <div class="p-6 space-y-4">
+              <!-- Pending State -->
+              <div *ngIf="order.status === 'PENDING'" class="space-y-3">
+                <button (click)="updateStatus('ACCEPTED')" class="w-full py-3 bg-success text-white rounded-xl font-bold hover:bg-success/90 transition-all shadow-lg shadow-success/20 flex items-center justify-center gap-2">
+                  <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                  Accept & Review
+                </button>
+                <button (click)="updateStatus('REJECTED')" class="w-full py-3 bg-error/10 text-error rounded-xl font-bold hover:bg-error/20 transition-all flex items-center justify-center gap-2">
+                  Reject Order
+                </button>
+              </div>
+
+              <!-- Accepted State -->
+              <div *ngIf="order.status === 'ACCEPTED'" class="space-y-3">
+                <div class="p-3 bg-blue-500/10 rounded-xl border border-blue-500/20 mb-4">
+                  <p class="text-xs text-blue-500 font-bold leading-tight">Order accepted. Please review details with the client before requesting payment.</p>
+                </div>
+                <button (click)="updateStatus('PAYMENT_PENDING')" class="w-full py-4 bg-primary text-white rounded-xl font-black uppercase tracking-widest text-xs hover:bg-primary/90 transition-all shadow-xl shadow-primary/30 flex items-center justify-center gap-2">
+                  <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" /></svg>
+                  Request Payment
+                </button>
+              </div>
+
+              <!-- Payment Pending State -->
+              <div *ngIf="order.status === 'PAYMENT_PENDING'" class="space-y-3">
+                <div class="p-3 bg-orange-500/10 rounded-xl border border-orange-500/20 mb-4 text-center">
+                  <p class="text-[10px] text-orange-500 font-black uppercase tracking-widest mb-1">Waiting for payment</p>
+                  <p class="text-xs text-text-secondary">Client has been notified. You can start once payment is confirmed.</p>
+                </div>
+                <button (click)="updateStatus('IN_PROGRESS')" class="w-full py-4 bg-purple-600 text-white rounded-xl font-black uppercase tracking-widest text-xs hover:bg-purple-700 transition-all shadow-xl shadow-purple-500/30 flex items-center justify-center gap-2">
+                   <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" /></svg>
+                   Start Project
+                </button>
+              </div>
+
+              <!-- In Progress State -->
+              <div *ngIf="order.status === 'IN_PROGRESS'" class="space-y-3">
+                <div class="flex items-center gap-2 mb-4">
+                  <span class="relative flex h-3 w-3">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-3 w-3 bg-purple-500"></span>
+                  </span>
+                  <span class="text-xs font-bold text-purple-500 uppercase tracking-widest">Project in development</span>
+                </div>
+                <button (click)="updateStatus('FINISHED')" class="w-full py-4 bg-success text-white rounded-xl font-black uppercase tracking-widest text-xs hover:bg-success/90 transition-all shadow-xl shadow-success/30 flex items-center justify-center gap-2">
+                   Mark as Finished
+                </button>
+              </div>
+
+              <!-- Finished State -->
+              <div *ngIf="order.status === 'FINISHED'" class="p-4 bg-success/10 rounded-2xl border border-success/20 text-center">
+                <svg class="w-12 h-12 text-success mx-auto mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" /></svg>
+                <p class="text-sm font-black text-success uppercase tracking-widest">Project Completed</p>
+                <p class="text-xs text-text-secondary mt-1">Don't forget to fill in the final project details.</p>
+              </div>
+            </div>
+          </div>
+
           <!-- Client Card -->
           <div
             class="glass-panel rounded-2xl overflow-hidden transition-all duration-300"
@@ -381,7 +495,7 @@ export const revalidate = 0;
                 <div class="flex justify-between items-end">
                   <div>
                     <p class="text-surface/70 text-xs mb-1">Total</p>
-                    <p class="text-3xl font-bold">\${{ order.price }}</p>
+                    <p class="text-3xl font-bold">$ {{ order.price }}</p>
                   </div>
                   <div *ngIf="order.discountCode" class="text-right">
                     <p class="text-surface/70 text-xs mb-1">Coupon</p>
@@ -396,6 +510,7 @@ export const revalidate = 0;
             </div>
           </div>
         </div>
+
       </div>
 
       <!-- Floating Chat Button -->
@@ -602,6 +717,25 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
     payment: true,
   };
 
+
+  portfolioForm: any = {
+    title: '',
+    slug: '',
+    tagline: '',
+    description: '',
+    detailedDescription: '',
+    imageUrl: '',
+    category: '',
+    url: '',
+    features: [],
+    technologies: [],
+    client: '',
+    completionDate: '',
+    testimonial: { text: '', author: '', role: '' },
+    gallery: [],
+  };
+
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -641,6 +775,13 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
   this.adminService.getOrder(id).subscribe({
     next: (res: any) => {
       this.order = res.order; 
+      if (this.order.status === 'FINISHED' && !this.portfolioForm.title) {
+        this.portfolioForm.title = this.order.requirements?.businessName || `Project #${this.order.id}`;
+        this.portfolioForm.description = this.order.requirements?.description || '';
+        this.portfolioForm.client = this.order.user?.name || '';
+        this.portfolioForm.completionDate = new Date().toISOString().split('T')[0];
+        this.portfolioForm.slug = this.portfolioForm.title.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
+      }
     },
     error: (err) => {
       console.error(err);
@@ -799,5 +940,15 @@ sendMessage(event: Event) {
     });
 }
 
+  publishProject() {
+    this.adminService.createExampleProject(this.portfolioForm).subscribe({
+      next: () => {
+        alert('Project successfully published to showcase!');
+        this.router.navigate(['/content']);
+      },
+      error: (err) => alert('Error publishing project: ' + err.message),
+    });
+  }
 }
+
 
