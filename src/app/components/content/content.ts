@@ -4,10 +4,10 @@ import { FormsModule } from '@angular/forms';
 import { AdminService } from '../../services/admin';
 
 @Component({
-  selector: 'app-content',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
-  template: `
+    selector: 'app-content',
+    standalone: true,
+    imports: [CommonModule, FormsModule],
+    template: `
     <div class="p-6 max-w-7xl mx-auto">
       <div class="mb-8">
         <h1 class="text-3xl font-bold font-display text-gradient mb-2">Website Content</h1>
@@ -18,7 +18,7 @@ import { AdminService } from '../../services/admin';
 
       <div class="space-y-12">
         <!-- Example Projects Section -->
-n -->
+
         <section>
           <div class="flex flex-wrap justify-between items-center mb-6 gap-4">
             <h2 class="text-2xl font-bold text-text-primary flex items-center gap-2">
@@ -131,6 +131,16 @@ n -->
             </div>
 
             <!-- Project Fields (Refactored to Theme) -->
+            <div class="grid grid-cols-2 gap-4 mb-4">
+              <div class="col-span-2">
+                <label class="block text-sm font-bold text-text-secondary mb-1.5">Associated Plan</label>
+                <select [(ngModel)]="projectForm.planId" class="w-full px-4 py-2.5 bg-surface-highlight/50 border border-border rounded-xl focus:ring-2 focus:ring-secondary/20 focus:border-secondary transition-all outline-none text-text-primary">
+                  <option [ngValue]="null">-- No Plan Associated --</option>
+                  <option *ngFor="let plan of plans" [ngValue]="plan.id">{{ plan.name }}</option>
+                </select>
+              </div>
+            </div>
+
             <div class="grid grid-cols-2 gap-4">
               <div>
                 <label class="block text-sm font-bold text-text-secondary mb-1.5">Title</label>
@@ -191,8 +201,8 @@ n -->
       </div>
     </div>
   `,
-  styles: [
-    `
+    styles: [
+        `
       .custom-scrollbar::-webkit-scrollbar {
         width: 6px;
       }
@@ -207,104 +217,113 @@ n -->
         background: var(--color-primary);
       }
     `,
-  ],
+    ],
 })
 export class ContentComponent implements OnInit {
-  projects: any[] = [];
+    projects: any[] = [];
+    plans: any[] = [];
 
-  activeLang: 'es' | 'en' = 'es';
+    activeLang: 'es' | 'en' = 'es';
 
-  showProjectModal = false;
-  editingProject: any = null;
-  projectForm = {
-    title: '',
-    slug: '',
-    tagline: '',
-    tagline_en: '',
-    description: '',
-    description_en: '',
-    detailedDescription: '',
-    detailedDescription_en: '',
-    imageUrl: '',
-    category: '',
-    url: '',
-    features: [] as string[],
-    technologies: [] as string[],
-    client: '',
-    completionDate: '',
-    testimonial: { text: '', author: '', role: '' },
-    gallery: [] as string[],
-  };
-  projectFeaturesText = '';
-  projectTechnologiesText = '';
-  projectGalleryText = '';
-
-  constructor(private adminService: AdminService) {}
-
-  ngOnInit() {
-    this.loadProjects();
-  }
-
-  loadProjects() {
-    this.adminService.getProjects().subscribe((res: any) => {
-      this.projects = res;
-    });
-  }
-
-  addItem(list: any[], item: any) { list.push({ ...item }); }
-  removeItem(list: any[], index: number) { list.splice(index, 1); }
-
-  openProjectModal() {
-
-    console.log('Opening Project Modal');
-    this.editingProject = null;
-    this.resetProjectForm();
-    this.showProjectModal = true;
-  }
-
-  editProject(project: any) {
-    this.editingProject = project;
-    this.projectForm = { ...project, testimonial: project.testimonial || { text: '', author: '', role: '' } };
-    this.projectFeaturesText = project.features.join('\n');
-    this.projectTechnologiesText = project.technologies.join('\n');
-    const gallery = project.gallery || [];
-    this.projectGalleryText = gallery.join('\n');
-    this.showProjectModal = true;
-  }
-
-  closeProjectModal() { this.showProjectModal = false; }
-
-  resetProjectForm() {
-    this.projectForm = {
-      title: '', slug: '', tagline: '', tagline_en: '', description: '', description_en: '', detailedDescription: '', detailedDescription_en: '',
-      imageUrl: '', category: '', url: '', features: [], technologies: [], client: '', completionDate: '', testimonial: { text: '', author: '', role: '' }, gallery: []
+    showProjectModal = false;
+    editingProject: any = null;
+    projectForm = {
+        title: '',
+        slug: '',
+        tagline: '',
+        tagline_en: '',
+        description: '',
+        description_en: '',
+        detailedDescription: '',
+        detailedDescription_en: '',
+        imageUrl: '',
+        category: '',
+        url: '',
+        features: [] as string[],
+        technologies: [] as string[],
+        client: '',
+        completionDate: '',
+        testimonial: { text: '', author: '', role: '' },
+        gallery: [] as string[],
+        planId: null as number | null,
     };
-    this.projectFeaturesText = '';
-    this.projectTechnologiesText = '';
-    this.projectGalleryText = '';
-  }
+    projectFeaturesText = '';
+    projectTechnologiesText = '';
+    projectGalleryText = '';
 
-  updateProjectFeatures(e: any) { this.projectFeaturesText = e.target.value; this.projectForm.features = this.projectFeaturesText.split('\n').filter(s => s.trim()); }
-  updateProjectTechnologies(e: any) { this.projectTechnologiesText = e.target.value; this.projectForm.technologies = this.projectTechnologiesText.split('\n').filter(s => s.trim()); }
-  updateProjectGallery(e: any) { this.projectGalleryText = e.target.value; this.projectForm.gallery = this.projectGalleryText.split('\n').filter(s => s.trim()); }
+    constructor(private adminService: AdminService) { }
 
-  saveProject() {
-    if (this.editingProject) {
-      this.adminService.updateContentProject(this.editingProject.id, this.projectForm).subscribe(() => {
+    ngOnInit() {
         this.loadProjects();
-        this.closeProjectModal();
-      });
-    } else {
-      this.adminService.createProject(this.projectForm).subscribe(() => {
-        this.loadProjects();
-        this.closeProjectModal();
-      });
+        this.loadPlans();
     }
-  }
 
-  deleteProject(id: any) {
-    if(confirm('Are you sure?')) {
-      this.adminService.deleteProject(Number(id)).subscribe(() => this.loadProjects());
+    loadProjects() {
+        this.adminService.getProjects().subscribe((res: any) => {
+            this.projects = res;
+        });
     }
-  }
+
+    loadPlans() {
+        this.adminService.getPlans().subscribe((res: any) => {
+            this.plans = res;
+        });
+    }
+
+    addItem(list: any[], item: any) { list.push({ ...item }); }
+    removeItem(list: any[], index: number) { list.splice(index, 1); }
+
+    openProjectModal() {
+
+        console.log('Opening Project Modal');
+        this.editingProject = null;
+        this.resetProjectForm();
+        this.showProjectModal = true;
+    }
+
+    editProject(project: any) {
+        this.editingProject = project;
+        this.projectForm = { ...project, testimonial: project.testimonial || { text: '', author: '', role: '' } };
+        this.projectFeaturesText = project.features.join('\n');
+        this.projectTechnologiesText = project.technologies.join('\n');
+        const gallery = project.gallery || [];
+        this.projectGalleryText = gallery.join('\n');
+        this.showProjectModal = true;
+    }
+
+    closeProjectModal() { this.showProjectModal = false; }
+
+    resetProjectForm() {
+        this.projectForm = {
+            title: '', slug: '', tagline: '', tagline_en: '', description: '', description_en: '', detailedDescription: '', detailedDescription_en: '',
+            imageUrl: '', category: '', url: '', features: [], technologies: [], client: '', completionDate: '', testimonial: { text: '', author: '', role: '' }, gallery: [], planId: null
+        };
+        this.projectFeaturesText = '';
+        this.projectTechnologiesText = '';
+        this.projectGalleryText = '';
+    }
+
+    updateProjectFeatures(e: any) { this.projectFeaturesText = e.target.value; this.projectForm.features = this.projectFeaturesText.split('\n').filter(s => s.trim()); }
+    updateProjectTechnologies(e: any) { this.projectTechnologiesText = e.target.value; this.projectForm.technologies = this.projectTechnologiesText.split('\n').filter(s => s.trim()); }
+    updateProjectGallery(e: any) { this.projectGalleryText = e.target.value; this.projectForm.gallery = this.projectGalleryText.split('\n').filter(s => s.trim()); }
+
+    saveProject() {
+        if (this.editingProject) {
+            this.adminService.updateContentProject(this.editingProject.id, this.projectForm).subscribe(() => {
+                this.loadProjects();
+                this.closeProjectModal();
+            });
+        } else {
+            this.adminService.createProject(this.projectForm).subscribe(() => {
+                this.loadProjects();
+                this.closeProjectModal();
+            });
+        }
+    }
+
+    deleteProject(id: any) {
+        if (confirm('Are you sure?')) {
+            this.adminService.deleteProject(Number(id)).subscribe(() => this.loadProjects());
+        }
+    }
 }
