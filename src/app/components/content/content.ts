@@ -165,7 +165,7 @@ import { AdminService } from '../../services/admin';
               </div>
             </div>
 
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-2 gap-4 mb-4">
               <div>
                 <label class="block text-sm font-bold text-text-secondary mb-1.5">Project Link (URL)</label>
                 <input [(ngModel)]="projectForm.url" type="url" class="w-full px-4 py-2.5 bg-surface-highlight/50 border border-border rounded-xl focus:ring-2 focus:ring-secondary/20 focus:border-secondary transition-all outline-none text-text-primary" placeholder="https://..." />
@@ -174,6 +174,15 @@ import { AdminService } from '../../services/admin';
                 <label class="block text-sm font-bold text-text-secondary mb-1.5">Client</label>
                 <input [(ngModel)]="projectForm.client" type="text" class="w-full px-4 py-2.5 bg-surface-highlight/50 border border-border rounded-xl focus:ring-2 focus:ring-secondary/20 focus:border-secondary transition-all outline-none text-text-primary" />
               </div>
+            </div>
+
+            <div class="mb-4">
+               <label class="block text-sm font-bold text-text-secondary mb-1.5">Associated Plan (Optional)</label>
+               <select [(ngModel)]="projectForm.planId" class="w-full px-4 py-2.5 bg-surface-highlight/50 border border-border rounded-xl focus:ring-2 focus:ring-secondary/20 focus:border-secondary transition-all outline-none text-text-primary">
+                 <option [ngValue]="null">-- No Plan Selected --</option>
+                 <option *ngFor="let plan of plans" [ngValue]="plan.id">{{ plan.name }} ($ {{ plan.setupPrice }})</option>
+               </select>
+               <p class="text-[10px] text-text-muted mt-1">If selected, this project will appear as an example in the "{{ activeLang === 'es' ? 'Planes' : 'Plans' }}" page detail.</p>
             </div>
 
              <div>

@@ -100,53 +100,73 @@ export const revalidate = 0;
             class="glass-panel rounded-2xl overflow-hidden transition-all duration-300"
           >
             <div
-              class="p-6 border-b border-border bg-surface-highlight/30 flex justify-between items-center cursor-pointer hover:bg-surface-highlight/50 transition-colors"
-              (click)="toggleSection('details')"
+              class="p-6 border-b border-border bg-surface-highlight/30 flex justify-between items-center cursor-pointer transition-colors"
             >
-              <h2 class="text-lg font-bold text-text-primary flex items-center gap-2">
-                <svg
-                  class="w-5 h-5 text-primary"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                  />
-                </svg>
-                Project Details
-              </h2>
-              <svg
-                class="w-5 h-5 text-text-muted transform transition-transform duration-300"
-                [class.rotate-180]="expandedSections['details']"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M19 9l-7 7-7-7"
-                />
-              </svg>
+              <div class="flex items-center gap-2" (click)="toggleSection('details')">
+                  <svg
+                    class="w-5 h-5 text-primary"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                    />
+                  </svg>
+                  <h2 class="text-lg font-bold text-text-primary">Project Details</h2>
+              </div>
+              <div class="flex items-center gap-3">
+                 <button *ngIf="expandedSections['details'] && !isEditingDetails" (click)="startEditDetails($event)" class="text-xs font-bold text-primary bg-primary/10 px-3 py-1.5 rounded-lg hover:bg-primary/20 transition-colors">Edit</button>
+                 <button *ngIf="expandedSections['details'] && isEditingDetails" (click)="saveOrderDetails($event)" class="text-xs font-bold text-white bg-success px-3 py-1.5 rounded-lg hover:bg-success/90 transition-colors shadow-md">Save</button>
+                 <button *ngIf="expandedSections['details'] && isEditingDetails" (click)="cancelEditDetails($event)" class="text-xs font-bold text-text-secondary bg-surface border border-border px-3 py-1.5 rounded-lg hover:bg-surface-highlight transition-colors">Cancel</button>
+
+                 <svg
+                    (click)="toggleSection('details')"
+                    class="w-5 h-5 text-text-muted transform transition-transform duration-300 ml-2"
+                    [class.rotate-180]="expandedSections['details']"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+              </div>
             </div>
             <div class="p-6 space-y-6" *ngIf="expandedSections['details']">
-              <div class="grid grid-cols-2 gap-4">
-                <div class="p-4 bg-primary/10 rounded-xl border border-primary/20">
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="p-4 bg-primary/10 rounded-xl border border-primary/20 flex flex-col justify-center">
                   <label class="text-xs text-primary uppercase font-bold tracking-wider"
                     >Plan</label
                   >
-                  <p class="text-xl font-bold text-text-primary capitalize">{{ order.plan }}</p>
+                  <p *ngIf="!isEditingDetails" class="text-xl font-bold text-text-primary capitalize">{{ order.plan }}</p>
+                  <input *ngIf="isEditingDetails" [(ngModel)]="editForm.plan" class="w-full mt-1 px-3 py-2 bg-surface text-text-primary border border-primary/30 rounded-lg focus:outline-none" />
                 </div>
-                <div class="p-4 bg-secondary/10 rounded-xl border border-secondary/20">
+                <div class="p-4 bg-secondary/10 rounded-xl border border-secondary/20 flex flex-col justify-center">
                   <label class="text-xs text-secondary uppercase font-bold tracking-wider"
                     >Price</label
                   >
-                  <p class="text-xl font-bold text-text-primary">\${{ order.price }}</p>
+                  <p *ngIf="!isEditingDetails" class="text-xl font-bold text-text-primary"><span *ngIf="order.price !== null && order.price !== undefined">$</span>{{ order.price !== null && order.price !== undefined ? order.price : 'N/A' }}</p>
+                  <div *ngIf="isEditingDetails" class="flex items-center mt-1">
+                      <span class="text-text-primary font-bold mr-2">$</span>
+                      <input type="number" [(ngModel)]="editForm.price" class="w-full px-3 py-2 bg-surface text-text-primary border border-secondary/30 rounded-lg focus:outline-none" />
+                  </div>
+                </div>
+                <div class="p-4 bg-purple-500/10 rounded-xl border border-purple-500/20 flex flex-col justify-center">
+                  <label class="text-xs text-purple-500 uppercase font-bold tracking-wider"
+                    >Delivery Date</label
+                  >
+                  <p *ngIf="!isEditingDetails" class="text-lg font-bold text-text-primary">
+                      {{ order.deliveryDate ? (order.deliveryDate | date : 'mediumDate') : 'Not Set' }}
+                  </p>
+                  <input *ngIf="isEditingDetails" type="date" [(ngModel)]="editForm.deliveryDate" class="w-full mt-1 px-3 py-2 bg-surface text-text-primary border border-purple-500/30 rounded-lg focus:outline-none text-sm" />
                 </div>
               </div>
 
@@ -417,10 +437,52 @@ export const revalidate = 0;
               </div>
 
               <!-- Finished State -->
-              <div *ngIf="order.status === 'FINISHED'" class="p-4 bg-success/10 rounded-2xl border border-success/20 text-center">
-                <svg class="w-12 h-12 text-success mx-auto mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" /></svg>
-                <p class="text-sm font-black text-success uppercase tracking-widest">Project Completed</p>
-                <p class="text-xs text-text-secondary mt-1">Don't forget to fill in the final project details.</p>
+              <div *ngIf="order.status === 'FINISHED'" class="space-y-4">
+                <div class="p-4 bg-success/10 rounded-2xl border border-success/20 text-center">
+                  <svg class="w-12 h-12 text-success mx-auto mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" /></svg>
+                  <p class="text-sm font-black text-success uppercase tracking-widest">Project Completed</p>
+                  <p class="text-xs text-text-secondary mt-1">Fill in the final project details to deliver to the client.</p>
+                </div>
+
+                <!-- Project Delivery Form -->
+                <div class="p-5 bg-surface-highlight/30 rounded-2xl border border-border">
+                  <h4 class="text-sm font-bold text-text-primary mb-4 uppercase tracking-wider">Delivery Details</h4>
+                  <form (submit)="deliverProject($event)" class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label class="block text-xs text-text-muted mb-1 font-medium">Project Name</label>
+                          <input type="text" [(ngModel)]="projectForm.name" name="projectName" class="w-full px-3 py-2 bg-surface border border-border rounded-lg text-sm text-text-primary focus:outline-none focus:border-primary" />
+                        </div>
+                        <div>
+                          <label class="block text-xs text-text-muted mb-1 font-medium">Live URL</label>
+                          <input type="url" [(ngModel)]="projectForm.url" name="projectUrl" class="w-full px-3 py-2 bg-surface border border-border rounded-lg text-sm text-text-primary focus:outline-none focus:border-primary" />
+                        </div>
+                        <div>
+                          <label class="block text-xs text-text-muted mb-1 font-medium">Admin Panel URL</label>
+                          <input type="url" [(ngModel)]="projectForm.adminPanelUrl" name="adminPanelUrl" class="w-full px-3 py-2 bg-surface border border-border rounded-lg text-sm text-text-primary focus:outline-none focus:border-primary" />
+                        </div>
+                        <div>
+                          <label class="block text-xs text-text-muted mb-1 font-medium">Documentation URL</label>
+                          <input type="url" [(ngModel)]="projectForm.documentationUrl" name="docUrl" class="w-full px-3 py-2 bg-surface border border-border rounded-lg text-sm text-text-primary focus:outline-none focus:border-primary" />
+                        </div>
+                        <div>
+                          <label class="block text-xs text-text-muted mb-1 font-medium">Admin Username</label>
+                          <input type="text" [(ngModel)]="projectForm.adminUsername" name="adminUser" class="w-full px-3 py-2 bg-surface border border-border rounded-lg text-sm text-text-primary focus:outline-none focus:border-primary" />
+                        </div>
+                        <div>
+                          <label class="block text-xs text-text-muted mb-1 font-medium">Admin Password</label>
+                          <input type="text" [(ngModel)]="projectForm.adminPassword" name="adminPass" class="w-full px-3 py-2 bg-surface border border-border rounded-lg text-sm text-text-primary focus:outline-none focus:border-primary" />
+                        </div>
+                    </div>
+                    <div>
+                      <label class="block text-xs text-text-muted mb-1 font-medium">Short Description / Delivery Note</label>
+                      <textarea [(ngModel)]="projectForm.description" name="projectDesc" class="w-full px-3 py-2 bg-surface border border-border rounded-lg text-sm text-text-primary h-20 focus:outline-none focus:border-primary"></textarea>
+                    </div>
+                    <button type="submit" class="w-full py-3 bg-success text-white rounded-xl font-bold hover:bg-success/90 transition-all shadow-md">
+                      Save Delivery Options
+                    </button>
+                  </form>
+                </div>
               </div>
             </div>
           </div>
@@ -717,6 +779,12 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
     payment: true,
   };
 
+  isEditingDetails: boolean = false;
+  editForm: { plan: string; price: number | null; deliveryDate: string } = { plan: '', price: null, deliveryDate: '' };
+
+  projectForm: any = {
+    name: '', url: '', adminPanelUrl: '', adminUsername: '', adminPassword: '', documentationUrl: '', description: ''
+  };
 
   portfolioForm: any = {
     title: '',
@@ -770,8 +838,7 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
     }
   }
 
- loadOrder(id: string, showLoader = true) {
- 
+  loadOrder(id: string, showLoader = true) {
   this.adminService.getOrder(id).subscribe({
     next: (res: any) => {
       this.order = res.order; 
@@ -781,6 +848,10 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
         this.portfolioForm.client = this.order.user?.name || '';
         this.portfolioForm.completionDate = new Date().toISOString().split('T')[0];
         this.portfolioForm.slug = this.portfolioForm.title.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
+      }
+
+      if (this.order.project) {
+        this.projectForm = { ...this.order.project };
       }
     },
     error: (err) => {
@@ -853,6 +924,32 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
     }
   }
 
+  startEditDetails(event: Event) {
+    event.stopPropagation();
+    this.isEditingDetails = true;
+    this.editForm = {
+      plan: this.order.plan || '',
+      price: this.order.price !== undefined ? this.order.price : null,
+      deliveryDate: this.order.deliveryDate ? new Date(this.order.deliveryDate).toISOString().split('T')[0] : ''
+    };
+  }
+
+  cancelEditDetails(event: Event) {
+    event.stopPropagation();
+    this.isEditingDetails = false;
+  }
+
+  saveOrderDetails(event: Event) {
+    event.stopPropagation();
+    this.adminService.updateOrder(this.order.id, this.editForm).subscribe({
+      next: () => {
+        this.isEditingDetails = false;
+        this.loadOrder(this.order.id);
+      },
+      error: (err) => alert('Error saving order details: ' + err.message)
+    });
+  }
+
   addTimelineStep() {
     if (!this.order.timeline) {
       this.order.timeline = { steps: [] };
@@ -885,6 +982,17 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
       .subscribe(() => {
         alert('Timeline updated');
       });
+  }
+
+  deliverProject(event: Event) {
+    event.preventDefault();
+    this.adminService.updateProject(this.order.id, this.projectForm).subscribe({
+      next: () => {
+        alert('Project delivery details saved successfully!');
+        this.loadOrder(this.order.id);
+      },
+      error: (err) => alert('Error saving project delivery: ' + err.message)
+    });
   }
 
   toggleChat() {
