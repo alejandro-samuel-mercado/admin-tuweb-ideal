@@ -10,10 +10,10 @@ export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 @Component({
-  selector: 'app-order-detail',
-  standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
-  template: `
+    selector: 'app-order-detail',
+    standalone: true,
+    imports: [CommonModule, FormsModule, RouterModule],
+    template: `
     <div *ngIf="order" class="max-w-6xl mx-auto pb-20">
       <!-- Header Section -->
       <div class="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -235,12 +235,7 @@ export const revalidate = 0;
           <div class="glass-panel rounded-2xl overflow-hidden shadow-lg shadow-black/5">
             <div class="p-6 border-b border-border bg-surface-highlight/30 flex justify-between items-center text-text-primary">
               <h2 class="text-lg font-bold">Progress Tracking</h2>
-              <button
-                (click)="addTimelineStep()"
-                class="px-4 py-2 bg-surface border border-border text-text-secondary rounded-lg text-sm font-bold hover:bg-surface-highlight transition-all"
-              >
-                + Step
-              </button>
+             
             </div>
             
             <div class="p-4 md:p-8">
@@ -516,7 +511,7 @@ export const revalidate = 0;
                 <div
                   class="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white text-xl font-bold shadow-lg shadow-primary/20"
                 >
-                  {{ order.user?.name?.charAt(0) || '?' }}
+                  {{ order.user?.name ? order.user.name[0] : '?' }}
                 </div>
                 <div>
                   <p class="text-lg font-bold text-text-primary">{{ order.user?.name || 'Unknown User' }}</p>
@@ -624,7 +619,7 @@ export const revalidate = 0;
             <div
               class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center font-bold"
             >
-              {{ order.user?.name?.charAt(0) || '?' }}
+              {{ order.user?.name ? order.user.name[0] : '?' }}
             </div>
             <div>
               <h3 class="font-bold">Chat with {{ order.user?.name || 'User' }}</h3>
@@ -740,8 +735,8 @@ export const revalidate = 0;
       </div>
     </div>
   `,
-  styles: [
-    `
+    styles: [
+        `
       .custom-scrollbar::-webkit-scrollbar {
         width: 4px;
       }
@@ -756,307 +751,316 @@ export const revalidate = 0;
         background: var(--color-text-muted);
       }
     `,
-  ],
+    ],
 })
 export class OrderDetailComponent implements OnInit, OnDestroy {
-  @ViewChild('chatContainer') private chatContainer!: ElementRef;
-  @ViewChild('messagesEnd') private messagesEnd!: ElementRef;
+    @ViewChild('chatContainer') private chatContainer!: ElementRef;
+    @ViewChild('messagesEnd') private messagesEnd!: ElementRef;
 
-  order: any;
-  deliveryDate: string = '';
-  newMessage: string = '';
-  isChatOpen: boolean = false;
-  selectedImage: File | null = null;
-  imagePreview: string | null = null;
-  private pollingInterval: any;
-  private shouldAutoScroll: boolean = true;
+    order: any;
+    deliveryDate: string = '';
+    newMessage: string = '';
+    isChatOpen: boolean = false;
+    selectedImage: File | null = null;
+    imagePreview: string | null = null;
+    private pollingInterval: any;
+    private shouldAutoScroll: boolean = true;
 
-  expandedSections: { [key: string]: boolean } = {
-    details: true,
-    timeline: true,
-    client: true,
-    status: true,
-    payment: true,
-  };
-
-  isEditingDetails: boolean = false;
-  editForm: { plan: string; price: number | null; deliveryDate: string } = { plan: '', price: null, deliveryDate: '' };
-
-  projectForm: any = {
-    name: '', url: '', adminPanelUrl: '', adminUsername: '', adminPassword: '', documentationUrl: '', description: ''
-  };
-
-  portfolioForm: any = {
-    title: '',
-    slug: '',
-    tagline: '',
-    description: '',
-    detailedDescription: '',
-    imageUrl: '',
-    category: '',
-    url: '',
-    features: [],
-    technologies: [],
-    client: '',
-    completionDate: '',
-    testimonial: { text: '', author: '', role: '' },
-    gallery: [],
-  };
-
-
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private adminService: AdminService
-  ) {}
-
-  toggleSection(section: string) {
-    this.expandedSections[section] = !this.expandedSections[section];
-  }
-
-  ngOnInit() {
-    this.route.paramMap.subscribe((params) => {
-    const id = params.get('id');
-
-    if (!id) {
-      return; 
-    }
-
-    this.loadOrder(id);
-  });
-
-  this.pollingInterval = setInterval(() => {
-    if (this.order?.id) {
-      this.loadOrder(this.order.id, false);
-    }
-  }, 5000);
-  }
-
-  ngOnDestroy() {
-    if (this.pollingInterval) {
-      clearInterval(this.pollingInterval);
-    }
-  }
-
-  loadOrder(id: string, showLoader = true) {
-  this.adminService.getOrder(id).subscribe({
-    next: (res: any) => {
-      this.order = res.order; 
-      if (this.order.status === 'FINISHED' && !this.portfolioForm.title) {
-        this.portfolioForm.title = this.order.requirements?.businessName || `Project #${this.order.id}`;
-        this.portfolioForm.description = this.order.requirements?.description || '';
-        this.portfolioForm.client = this.order.user?.name || '';
-        this.portfolioForm.completionDate = new Date().toISOString().split('T')[0];
-        this.portfolioForm.slug = this.portfolioForm.title.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
-      }
-
-      if (this.order.project) {
-        this.projectForm = { ...this.order.project };
-      }
-    },
-    error: (err) => {
-      console.error(err);
-    },
-  });
-}
-
-
-  getApiUrl(path: string): string {
-    if (!path) return '';
-    return path.startsWith('http') ? path : `\${environment.apiUrl.replace('/api', '')}\${path}`;
-  }
-  
-  openImage(url: string) {
-      window.open(url, '_blank');
-  }
-
-  getRequirementsList(reqs: any): { label: string; value: any }[] {
-    if (!reqs) return [];
-    const mapping: {[key: string]: string} = {
-      businessName: 'Business Name',
-      industry: 'Industry',
-      targetAudience: 'Target Audience',
-      description: 'Description',
-      designPreferences: 'Visual Style',
-      colors: 'Brand Colors',
-      referenceSites: 'Reference Sites',
-      pages: 'Pages Needed',
-      functionalities: 'Functionalities',
-      contentReady: 'Content Status'
+    expandedSections: { [key: string]: boolean } = {
+        details: true,
+        timeline: true,
+        client: true,
+        status: true,
+        payment: true,
     };
-    
-    return Object.keys(reqs)
-      .filter(key => reqs[key] && mapping[key])
-      .map(key => ({ label: mapping[key], value: reqs[key] }));
-  }
 
-  getStatusLabel(status: string): string {
-    const labels: { [key: string]: string } = {
-      PENDING: 'Pending',
-      ACCEPTED: 'Accepted',
-      PAYMENT_PENDING: 'Payment Pending',
-      IN_PROGRESS: 'In Progress',
-      FINISHED: 'Finished',
+    isEditingDetails: boolean = false;
+    editForm: { plan: string; price: number | null; deliveryDate: string } = { plan: '', price: null, deliveryDate: '' };
+
+    projectForm: any = {
+        name: '', url: '', adminPanelUrl: '', adminUsername: '', adminPassword: '', documentationUrl: '', description: ''
     };
-    return labels[status] || status;
-  }
 
-  updateStatus(status: string) {
-    this.adminService.updateOrderStatus(this.order.id, status).subscribe(() => {
-      this.loadOrder(this.order.id);
-    });
-  }
+    portfolioForm: any = {
+        title: '',
+        slug: '',
+        tagline: '',
+        description: '',
+        detailedDescription: '',
+        imageUrl: '',
+        category: '',
+        url: '',
+        features: [],
+        technologies: [],
+        client: '',
+        completionDate: '',
+        testimonial: { text: '', author: '', role: '' },
+        gallery: [],
+    };
 
-  saveDeliveryDate() {
-    if (!this.deliveryDate) return;
-    this.adminService
-      .updateOrderDeliveryDate(this.order.id, new Date(this.deliveryDate))
-      .subscribe(() => {
-        alert('Fecha de entrega actualizada');
-      });
-  }
 
-  deleteOrder() {
-    if (confirm('Are you sure you want to delete this order?')) {
-      this.adminService.deleteOrder(this.order.id).subscribe(() => {
-        this.router.navigate(['/orders']);
-      });
+    constructor(
+        private route: ActivatedRoute,
+        private router: Router,
+        private adminService: AdminService
+    ) { }
+
+    toggleSection(section: string) {
+        this.expandedSections[section] = !this.expandedSections[section];
     }
-  }
 
-  startEditDetails(event: Event) {
-    event.stopPropagation();
-    this.isEditingDetails = true;
-    this.editForm = {
-      plan: this.order.plan || '',
-      price: this.order.price !== undefined ? this.order.price : null,
-      deliveryDate: this.order.deliveryDate ? new Date(this.order.deliveryDate).toISOString().split('T')[0] : ''
-    };
-  }
+    ngOnInit() {
+        this.route.paramMap.subscribe((params) => {
+            const id = params.get('id');
 
-  cancelEditDetails(event: Event) {
-    event.stopPropagation();
-    this.isEditingDetails = false;
-  }
+            if (!id) {
+                return;
+            }
 
-  saveOrderDetails(event: Event) {
-    event.stopPropagation();
-    this.adminService.updateOrder(this.order.id, this.editForm).subscribe({
-      next: () => {
+            this.loadOrder(id);
+        });
+
+        this.pollingInterval = setInterval(() => {
+            if (this.order?.id) {
+                this.loadOrder(this.order.id, false, true);
+            }
+        }, 5000);
+    }
+
+    ngOnDestroy() {
+        if (this.pollingInterval) {
+            clearInterval(this.pollingInterval);
+        }
+    }
+
+    loadOrder(id: string, showLoader = true, isPoll = false) {
+        this.adminService.getOrder(id).subscribe({
+            next: (res: any) => {
+                if (isPoll && this.order) {
+                    // If this is a background poll, ONLY update the chat messages
+                    // so we don't overwrite the admin's unsaved timeline/form edits!
+                    if (this.order.messages?.length !== res.order.messages?.length) {
+                        this.order.messages = res.order.messages;
+                    }
+                    return;
+                }
+
+                this.order = res.order;
+                if (this.order.status === 'FINISHED' && !this.portfolioForm.title) {
+                    this.portfolioForm.title = this.order.requirements?.businessName || `Project #${this.order.id}`;
+                    this.portfolioForm.description = this.order.requirements?.description || '';
+                    this.portfolioForm.client = this.order.user?.name || '';
+                    this.portfolioForm.completionDate = new Date().toISOString().split('T')[0];
+                    this.portfolioForm.slug = this.portfolioForm.title.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
+                }
+
+                if (this.order.project) {
+                    this.projectForm = { ...this.order.project };
+                }
+            },
+            error: (err) => {
+                console.error(err);
+            },
+        });
+    }
+
+
+    getApiUrl(path: string): string {
+        if (!path) return '';
+        return path.startsWith('http') ? path : `\${environment.apiUrl.replace('/api', '')}\${path}`;
+    }
+
+    openImage(url: string) {
+        window.open(url, '_blank');
+    }
+
+    getRequirementsList(reqs: any): { label: string; value: any }[] {
+        if (!reqs) return [];
+        const mapping: { [key: string]: string } = {
+            businessName: 'Business Name',
+            industry: 'Industry',
+            targetAudience: 'Target Audience',
+            description: 'Description',
+            designPreferences: 'Visual Style',
+            colors: 'Brand Colors',
+            referenceSites: 'Reference Sites',
+            pages: 'Pages Needed',
+            functionalities: 'Functionalities',
+            contentReady: 'Content Status'
+        };
+
+        return Object.keys(reqs)
+            .filter(key => reqs[key] && mapping[key])
+            .map(key => ({ label: mapping[key], value: reqs[key] }));
+    }
+
+    getStatusLabel(status: string): string {
+        const labels: { [key: string]: string } = {
+            PENDING: 'Pending',
+            ACCEPTED: 'Accepted',
+            PAYMENT_PENDING: 'Payment Pending',
+            IN_PROGRESS: 'In Progress',
+            FINISHED: 'Finished',
+        };
+        return labels[status] || status;
+    }
+
+    updateStatus(status: string) {
+        this.adminService.updateOrderStatus(this.order.id, status).subscribe(() => {
+            this.loadOrder(this.order.id);
+        });
+    }
+
+    saveDeliveryDate() {
+        if (!this.deliveryDate) return;
+        this.adminService
+            .updateOrderDeliveryDate(this.order.id, new Date(this.deliveryDate))
+            .subscribe(() => {
+                alert('Fecha de entrega actualizada');
+            });
+    }
+
+    deleteOrder() {
+        if (confirm('Are you sure you want to delete this order?')) {
+            this.adminService.deleteOrder(this.order.id).subscribe(() => {
+                this.router.navigate(['/orders']);
+            });
+        }
+    }
+
+    startEditDetails(event: Event) {
+        event.stopPropagation();
+        this.isEditingDetails = true;
+        this.editForm = {
+            plan: this.order.plan || '',
+            price: this.order.price !== undefined ? this.order.price : null,
+            deliveryDate: this.order.deliveryDate ? new Date(this.order.deliveryDate).toISOString().split('T')[0] : ''
+        };
+    }
+
+    cancelEditDetails(event: Event) {
+        event.stopPropagation();
         this.isEditingDetails = false;
-        this.loadOrder(this.order.id);
-      },
-      error: (err) => alert('Error saving order details: ' + err.message)
-    });
-  }
-
-  addTimelineStep() {
-    if (!this.order.timeline) {
-      this.order.timeline = { steps: [] };
     }
-    this.order.timeline.steps.push({
-      title: 'New Step',
-      status: 'pending',
-      date: new Date().toISOString().split('T')[0],
-    });
-  }
 
-  removeTimelineStep(index: number) {
-      this.order.timeline.steps.splice(index, 1);
-  }
-
-  setStepStatus(index: number, status: 'pending' | 'current' | 'completed') {
-    this.order.timeline.steps[index].status = status;
-  }
-
-  toggleStepStatus(index: number) {
-      const statuses: ('pending' | 'current' | 'completed')[] = ['pending', 'current', 'completed'];
-      const currentStatus = this.order.timeline.steps[index].status;
-      const nextIndex = (statuses.indexOf(currentStatus) + 1) % statuses.length;
-      this.order.timeline.steps[index].status = statuses[nextIndex];
-  }
-
-  saveTimeline() {
-    this.adminService
-      .updateOrderTimeline(this.order.id, this.order.timeline)
-      .subscribe(() => {
-        alert('Timeline updated');
-      });
-  }
-
-  deliverProject(event: Event) {
-    event.preventDefault();
-    this.adminService.updateProject(this.order.id, this.projectForm).subscribe({
-      next: () => {
-        alert('Project delivery details saved successfully!');
-        this.loadOrder(this.order.id);
-      },
-      error: (err) => alert('Error saving project delivery: ' + err.message)
-    });
-  }
-
-  toggleChat() {
-    this.isChatOpen = !this.isChatOpen;
-    if (this.isChatOpen) {
-      setTimeout(() => this.scrollToBottom(), 100);
+    saveOrderDetails(event: Event) {
+        event.stopPropagation();
+        this.adminService.updateOrder(this.order.id, this.editForm).subscribe({
+            next: () => {
+                this.isEditingDetails = false;
+                this.loadOrder(this.order.id);
+            },
+            error: (err) => alert('Error saving order details: ' + err.message)
+        });
     }
-  }
 
-  handleScroll() {
-    const container = this.chatContainer.nativeElement;
-    const atBottom =
-      container.scrollHeight - container.scrollTop <= container.clientHeight + 100;
-    this.shouldAutoScroll = atBottom;
-  }
-
-  scrollToBottom() {
-    if (this.chatContainer) {
-      this.chatContainer.nativeElement.scrollTop = this.chatContainer.nativeElement.scrollHeight;
+    addTimelineStep() {
+        if (!this.order.timeline) {
+            this.order.timeline = { steps: [] };
+        }
+        this.order.timeline.steps.push({
+            title: 'New Step',
+            status: 'pending',
+            date: new Date().toISOString().split('T')[0],
+        });
     }
-  }
 
-  onFileSelected(event: any) {
-    const file = event.target.files[0];
-    if (file) {
-      this.selectedImage = file;
-      const reader = new FileReader();
-      reader.onload = (e: any) => {
-        this.imagePreview = e.target.result;
-      };
-      reader.readAsDataURL(file);
+    removeTimelineStep(index: number) {
+        this.order.timeline.steps.splice(index, 1);
     }
-  }
 
-  removeSelectedImage() {
-    this.selectedImage = null;
-    this.imagePreview = null;
-  }
-sendMessage(event: Event) {
-  event.preventDefault();
+    setStepStatus(index: number, status: 'pending' | 'current' | 'completed') {
+        this.order.timeline.steps[index].status = status;
+    }
 
-  if (!this.newMessage.trim() && !this.selectedImage) return;
+    toggleStepStatus(index: number) {
+        const statuses: ('pending' | 'current' | 'completed')[] = ['pending', 'current', 'completed'];
+        const currentStatus = this.order.timeline.steps[index].status;
+        const nextIndex = (statuses.indexOf(currentStatus) + 1) % statuses.length;
+        this.order.timeline.steps[index].status = statuses[nextIndex];
+    }
 
-  this.adminService
-    .sendMessage(this.order.id, this.newMessage, this.selectedImage || undefined)
-    .subscribe({
-      next: () => {
-        this.newMessage = '';
-        this.removeSelectedImage();
-        this.loadOrder(this.order.id);
-      },
-      error: (err) => console.error(err),
-    });
-}
+    saveTimeline() {
+        this.adminService
+            .updateOrderTimeline(this.order.id, this.order.timeline)
+            .subscribe(() => {
+                alert('Timeline updated');
+            });
+    }
 
-  publishProject() {
-    this.adminService.createExampleProject(this.portfolioForm).subscribe({
-      next: () => {
-        alert('Project successfully published to showcase!');
-        this.router.navigate(['/content']);
-      },
-      error: (err) => alert('Error publishing project: ' + err.message),
-    });
-  }
+    deliverProject(event: Event) {
+        event.preventDefault();
+        this.adminService.updateProject(this.order.id, this.projectForm).subscribe({
+            next: () => {
+                alert('Project delivery details saved successfully!');
+                this.loadOrder(this.order.id);
+            },
+            error: (err) => alert('Error saving project delivery: ' + err.message)
+        });
+    }
+
+    toggleChat() {
+        this.isChatOpen = !this.isChatOpen;
+        if (this.isChatOpen) {
+            setTimeout(() => this.scrollToBottom(), 100);
+        }
+    }
+
+    handleScroll() {
+        const container = this.chatContainer.nativeElement;
+        const atBottom =
+            container.scrollHeight - container.scrollTop <= container.clientHeight + 100;
+        this.shouldAutoScroll = atBottom;
+    }
+
+    scrollToBottom() {
+        if (this.chatContainer) {
+            this.chatContainer.nativeElement.scrollTop = this.chatContainer.nativeElement.scrollHeight;
+        }
+    }
+
+    onFileSelected(event: any) {
+        const file = event.target.files[0];
+        if (file) {
+            this.selectedImage = file;
+            const reader = new FileReader();
+            reader.onload = (e: any) => {
+                this.imagePreview = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    removeSelectedImage() {
+        this.selectedImage = null;
+        this.imagePreview = null;
+    }
+    sendMessage(event: Event) {
+        event.preventDefault();
+
+        if (!this.newMessage.trim() && !this.selectedImage) return;
+
+        this.adminService
+            .sendMessage(this.order.id, this.newMessage, this.selectedImage || undefined)
+            .subscribe({
+                next: () => {
+                    this.newMessage = '';
+                    this.removeSelectedImage();
+                    this.loadOrder(this.order.id);
+                },
+                error: (err) => console.error(err),
+            });
+    }
+
+    publishProject() {
+        this.adminService.createExampleProject(this.portfolioForm).subscribe({
+            next: () => {
+                alert('Project successfully published to showcase!');
+                this.router.navigate(['/content']);
+            },
+            error: (err) => alert('Error publishing project: ' + err.message),
+        });
+    }
 }
 
 
