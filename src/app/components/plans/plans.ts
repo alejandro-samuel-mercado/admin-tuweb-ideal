@@ -40,7 +40,7 @@ import { AdminService } from '../../services/admin';
 
             <div class="bg-surface-highlight/40 rounded-2xl p-6 border border-border/50 mb-6">
               <div class="flex items-baseline gap-1 mb-1">
-                <span class="text-2xl font-black text-text-primary">$ {{ plan.setupPrice }}</span>
+                <span class="text-2xl font-black text-text-primary">$ {{ plan.setupPrice || plan.price || 0 }}</span>
                 <span class="text-xs font-bold text-text-muted">Set-up</span>
               </div>
               <div class="flex items-center gap-2">
@@ -259,6 +259,9 @@ export class PlansComponent implements OnInit {
   editPlan(plan: any) {
     this.editingPlan = plan;
     this.form = JSON.parse(JSON.stringify(plan));
+    if (!this.form.setupPrice && this.form.price) {
+      this.form.setupPrice = this.form.price;
+    }
     this.featuresText = (plan.features || []).join('\n');
     this.useCasesText = (plan.useCases || []).join('\n');
     this.showModal = true;
