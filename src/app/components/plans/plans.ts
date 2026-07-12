@@ -77,6 +77,24 @@ import { AdminService } from '../../services/admin';
                 </svg>
               </button>
             </div>
+
+            <div>
+              <label class="block text-xs font-bold text-text-muted uppercase mb-1">Delivery Time</label>
+              <input 
+                  *ngIf="activeLang === 'es'"
+                  type="text" 
+                  [(ngModel)]="plan.deliveryTime" 
+                  class="w-full text-sm bg-surface-highlight/50 border-border rounded-lg focus:ring-primary focus:border-primary text-text-primary placeholder:text-text-muted" 
+                  placeholder="Ej. 2 a 3 semanas..."
+              />
+              <input 
+                  *ngIf="activeLang === 'en'"
+                  type="text" 
+                  [(ngModel)]="plan.deliveryTime_en" 
+                  class="w-full text-sm bg-surface-highlight/50 border-border rounded-lg focus:ring-primary focus:border-primary text-text-primary placeholder:text-text-muted" 
+                  placeholder="e.g. 2 to 3 weeks..."
+              />
+            </div>
           </div>
         </div>
       </div>
