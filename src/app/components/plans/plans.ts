@@ -77,8 +77,6 @@ import { AdminService } from '../../services/admin';
                 </svg>
               </button>
             </div>
-
-
           </div>
         </div>
       </div>
@@ -153,24 +151,6 @@ import { AdminService } from '../../services/admin';
             <div class="space-y-2">
               <label class="text-[10px] font-black text-text-muted uppercase tracking-[0.2em]">Pricing Detail (Small Print)</label>
               <input [(ngModel)]="form.price_detail" type="text" class="w-full px-5 py-3 bg-surface-highlight/50 border border-border rounded-2xl outline-none text-text-primary text-sm italic" placeholder="e.g. Includes hosting and support..." />
-            </div>
-
-            <div class="space-y-2">
-              <label class="text-[10px] font-black text-text-muted uppercase tracking-[0.2em]">Delivery Time</label>
-              <input 
-                  *ngIf="activeLang === 'es'"
-                  type="text" 
-                  [(ngModel)]="form.deliveryTime" 
-                  class="w-full px-5 py-3 bg-surface-highlight/50 border border-border rounded-2xl outline-none text-text-primary text-sm" 
-                  placeholder="Ej. 2 a 3 semanas..."
-              />
-              <input 
-                  *ngIf="activeLang === 'en'"
-                  type="text" 
-                  [(ngModel)]="form.deliveryTime_en" 
-                  class="w-full px-5 py-3 bg-surface-highlight/50 border border-border rounded-2xl outline-none text-text-primary text-sm" 
-                  placeholder="e.g. 2 to 3 weeks..."
-              />
             </div>
 
             <div class="space-y-2">
