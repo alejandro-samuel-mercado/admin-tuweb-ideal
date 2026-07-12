@@ -154,6 +154,24 @@ import { AdminService } from '../../services/admin';
             </div>
 
             <div class="space-y-2">
+              <label class="text-[10px] font-black text-text-muted uppercase tracking-[0.2em]">Delivery Time</label>
+              <input 
+                  *ngIf="activeLang === 'es'"
+                  type="text" 
+                  [(ngModel)]="form.deliveryTime" 
+                  class="w-full px-5 py-3 bg-surface-highlight/50 border border-border rounded-2xl outline-none text-text-primary text-sm" 
+                  placeholder="Ej. 2 a 3 semanas..."
+              />
+              <input 
+                  *ngIf="activeLang === 'en'"
+                  type="text" 
+                  [(ngModel)]="form.deliveryTime_en" 
+                  class="w-full px-5 py-3 bg-surface-highlight/50 border border-border rounded-2xl outline-none text-text-primary text-sm" 
+                  placeholder="e.g. 2 to 3 weeks..."
+              />
+            </div>
+
+            <div class="space-y-2">
               <label class="text-[10px] font-black text-text-muted uppercase tracking-[0.2em]">Marketing Tagline</label>
               <textarea *ngIf="activeLang === 'es'" [(ngModel)]="form.tagline" rows="2" class="w-full px-5 py-3 bg-surface-highlight/50 border border-border rounded-2xl focus:ring-4 focus:ring-primary/10 transition-all outline-none text-text-primary" placeholder="Una frase que impacte..."></textarea>
               <textarea *ngIf="activeLang === 'en'" [(ngModel)]="form.tagline_en" rows="2" class="w-full px-5 py-3 bg-surface-highlight/50 border border-border rounded-2xl focus:ring-4 focus:ring-primary/10 transition-all outline-none text-text-primary" placeholder="Catchy phrase... (EN)"></textarea>
