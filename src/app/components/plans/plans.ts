@@ -59,14 +59,6 @@ import { AdminService } from '../../services/admin';
                   <span class="p-1 px-2 bg-secondary/10 text-secondary text-[10px] font-bold rounded">IDEAL FOR</span>
                   <p class="text-xs text-text-secondary line-clamp-2">{{ plan.useCases.join(', ') }}</p>
                </div>
-               <div *ngIf="plan.projects && plan.projects.length > 0" class="flex items-start gap-3">
-                  <span class="p-1 px-2 bg-primary/10 text-primary text-[10px] font-bold rounded">EXAMPLES</span>
-                  <div class="flex flex-wrap gap-1.5 flex-1">
-                    <span *ngFor="let project of plan.projects" class="text-[10px] bg-surface-highlight border border-border px-2 py-0.5 rounded-md text-text-secondary truncate max-w-[150px]" [title]="project.title">
-                      {{ project.title }}
-                    </span>
-                  </div>
-               </div>
             </div>
 
             <div class="flex gap-3">
